@@ -4,6 +4,7 @@ para.m = 10;
 Ixx = 1;
 Iyy = 1;
 Izz = 1;
+phi_RW = pi/4;
 para.x_cm = [0, 0, 0];
 para.x_nozzle = zeros(8,3);
 para.x_nozzle(1, :) = [1, 0, 0];
@@ -14,42 +15,37 @@ para.I = zeros(3);
 para.I(1,1) = Ixx;
 para.I(2,2) = Iyy;
 para.I(3,3) = Izz;
+r_1 = [-1; -1; sqrt(2)*tan(phi_RW)];
+r_2 = [1; -1; sqrt(2)*tan(phi_RW)];
+r_3 = [1; 1; sqrt(2)*tan(phi_RW)];
+r_4 = [-1; 1; sqrt(2)*tan(phi_RW)];
+r_1 = r_1/norm(r_1);
+r_2 = r_2/norm(r_2);
+r_3 = r_3/norm(r_3);
+r_4 = r_4/norm(r_4);
+para.A_RW = [r_1, r_2, r_3, r_4];
 para_bus_info = Simulink.Bus.createObject(para);
 para_bus = evalin('base', para_bus_info.busName);
 
 %% control outputs
 % body frame thrust vector 
 thrust = zeros(8,3);
+rhodot = [0; 0; 0];
 % body frame reaction wheel speeds
 
 %thrust(:,3) = ones(8,1);
-thrust(1,:) = [0, 0, 1];
-thrust(2,:) = [0, 0, -1];
+thrust(1,:) = [0, 0, 0];
+thrust(2,:) = [0, 0, 0];
 
 %% sim run - ODE45
 x0 = zeros(21,1);
-x0(1:3) = [0, 0, pi/2];
+x0(1:3) = [0, 0, 0];
 tspan = [0, 2];
-[tout, xout] = ode45(@(t, x)plant(x, para, thrust), tspan, x0);
+[tout, xout] = ode45(@(t, x)plant(x, para, thrust, rhodot), tspan, x0);
 plot_sim(tout, xout, [1])
 
 %% sim run - Simulink
 
-%{
-dxdt_bus_info = Simulink.Bus.createObject(dxdt);
-dxdt_bus = evalin('base', dxdt_bus_info.busName);
-x_bus_info = Simulink.Bus.createObject(x);
-x_bus = evalin('base', x_bus_info.busName);
-%}
-
-% x = (theta[1:3], 
-%       w_b[1:3],    
-%       wdot_b[1:3],
-%       x_b[1:3], 
-%       xdot_b[1:3], 
-%       x[1:3], 
-%       xdot[1:3])
-% theta = [phi, theta, psi] (z y x implicit rotations)
 
 %% plot outputs
 function plot_sim(tout, xout, graph_sel) 
@@ -78,7 +74,7 @@ figure %thetaplot
     xlabel('time')
     ylabel("phi")
     subplot(3,1,2)
-    plot(tout, xout(:,8), 'b', 'linewidth', 2)
+    plot(tout, xout(:,2), 'b', 'linewidth', 2)
     xlabel('time')
     ylabel("theta") 
     subplot(3,1,3)
