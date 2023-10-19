@@ -24,7 +24,6 @@ r_2 = r_2/norm(r_2);
 r_3 = r_3/norm(r_3);
 r_4 = r_4/norm(r_4);
 para.A_RW = [r_1, r_2, r_3, r_4];
-B = para.A_RW * pinv(para.A_RW)
 para_bus_info = Simulink.Bus.createObject(para);
 para_bus = evalin('base', para_bus_info.busName);
 
