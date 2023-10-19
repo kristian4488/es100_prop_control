@@ -1,9 +1,9 @@
 %% constants 
 %positions are body frame quantities
-para.m = 10;
-Ixx = 1;
-Iyy = 1;
-Izz = 1;
+para.m = 9.7;
+Ixx = 0.69;
+Iyy = 0.81;
+Izz = 0.82;
 phi_RW = pi/4;
 para.x_cm = [0, 0, 0];
 para.x_nozzle = zeros(8,3);
@@ -24,6 +24,7 @@ r_2 = r_2/norm(r_2);
 r_3 = r_3/norm(r_3);
 r_4 = r_4/norm(r_4);
 para.A_RW = [r_1, r_2, r_3, r_4];
+B = para.A_RW * pinv(para.A_RW)
 para_bus_info = Simulink.Bus.createObject(para);
 para_bus = evalin('base', para_bus_info.busName);
 
@@ -39,7 +40,7 @@ thrust(2,:) = [0, 0, 0];
 
 %% sim run - ODE45
 x0 = zeros(21,1);
-x0(1:3) = [0, 0, 0];
+x0(1:3) = [0, 0 , 0];
 tspan = [0, 2];
 [tout, xout] = ode45(@(t, x)plant(x, para, thrust, rhodot), tspan, x0);
 plot_sim(tout, xout, [1])
