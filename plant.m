@@ -12,7 +12,7 @@ function dxdt = plant(x, para, thrust, rhodot)
     torque_b = zeros(8,3);
     force_b = zeros(8,3);
     for i= 1:8
-        torque_b(i,:) = cross(para.x_nozzle(i,:) - para.x_cm, thrust(i,:));
+        torque_b(i,:) = cross((para.x_nozzle(i,:) - para.x_cm), thrust(i,:));
         force_b(i,:) = thrust(i,:);                                           %duplicated for additional force later  
     end
     torque_net_b = sum(torque_b);
@@ -20,7 +20,7 @@ function dxdt = plant(x, para, thrust, rhodot)
 
     Tw_b_thetadot = [1, sin(x(1)) * tan(x(2)), cos(x(1)) * tan(x(2));
         0, cos(x(1)), -sin(x(1));
-        0, sin(x(1))/cos(x(2)), cos(x(1))/cos(x(2))];
+        0, sin(x(1))/cos(x(2)), cos(x(1))/cos(x(2))]
     Tb_e_psi = [-cos(x(3)), -sin(x(3)), 0;
                 sin(x(3)), -cos(x(3)), 0;
                 0,          0,          1];

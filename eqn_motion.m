@@ -5,10 +5,16 @@ Ixx = 0.69;
 Iyy = 0.81;
 Izz = 0.82;
 phi_RW = pi/4;
-para.x_cm = [0, 0, 0];
+para.x_cm = [0.1, 0.05, 0];
 para.x_nozzle = zeros(8,3);
-para.x_nozzle(1, :) = [1, 0, 0];
-para.x_nozzle(2, :) = [-1, 0, 0];
+para.x_nozzle = [0.2, 0.1, 0;
+                 0.2, 0.1, 0;
+                 0.2, 0, 0;
+                 0.2, 0, 0;
+                 0, 0, 0;
+                 0, 0, 0;
+                 0, 0.1, 0;
+                 0, 0.1, 0];
 
 %% derived quantities
 para.I = zeros(3);
@@ -31,18 +37,22 @@ para_bus = evalin('base', para_bus_info.busName);
 % body frame thrust vector 
 thrust = zeros(8,3);
 rhodot = [0; 0; 0];
-% body frame reaction wheel speeds
 
-%thrust(:,3) = ones(8,1);
-thrust(1,:) = [0, 0, 0];
-thrust(2,:) = [0, 0, 0];
+thrust(1,:) = 0 * [0, -1, 0];
+thrust(2,:) = 0 * [0, 0, 1];
+thrust(3,:) = 0 * [0, 0, 1];
+thrust(4,:) = 0 * [0, 1, 0];
+thrust(5,:) = 0 * [0, 1, 0];
+thrust(6,:) = 0 * [0, 0, 1];
+thrust(7,:) = 0 * [0, 0, 1];
+thrust(8,:) = 0 * [0, -1, 0];
 
 %% sim run - ODE45
 x0 = zeros(21,1);
-x0(1:3) = [0, 0 , 0];
+x0(1:3) = [0.001, pi/2 , 0];
 tspan = [0, 2];
 [tout, xout] = ode45(@(t, x)plant(x, para, thrust, rhodot), tspan, x0);
-plot_sim(tout, xout, [1])
+plot_sim(tout, xout, [1,2])
 
 %% sim run - Simulink
 
