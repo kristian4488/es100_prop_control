@@ -38,20 +38,22 @@ para_bus = evalin('base', para_bus_info.busName);
 thrust = zeros(8,3);
 rhodot = [0; 0; 0];
 
-thrust(1,:) = 0 * [0, -1, 0];
+thrust(1,:) = 1 * [0, -1, 0];
 thrust(2,:) = 0 * [0, 0, 1];
 thrust(3,:) = 0 * [0, 0, 1];
 thrust(4,:) = 0 * [0, 1, 0];
-thrust(5,:) = 0 * [0, 1, 0];
+thrust(5,:) = 1 * [0, 1, 0];
 thrust(6,:) = 0 * [0, 0, 1];
 thrust(7,:) = 0 * [0, 0, 1];
 thrust(8,:) = 0 * [0, -1, 0];
 
 %% sim run - ODE45
-x0 = zeros(21,1);
-x0(1:3) = [0.001, pi/2 , 0];
+x0 = zeros(22,1);
+eul0 = [0, 0, 0];   %initial orientation, ZYX, [psi, theta, phi]
+torque_ext_b = [0;0;0];
+x0(1:4) = eul2quat(eul0);
 tspan = [0, 2];
-[tout, xout] = ode45(@(t, x)plant(x, para, thrust, rhodot), tspan, x0);
+[tout, xout] = ode45(@(t, x)plant(x, para, thrust, rhodot, torque_ext_b), tspan, x0);
 plot_sim(tout, xout, [1,2])
 
 %% sim run - Simulink
@@ -67,7 +69,7 @@ function plot_sim(tout, xout, graph_sel)
 
     for i = (1:length(graph_sel))
         if graph_sel(i) == 1
-            plot_theta(tout, xout)
+            plot_q(tout, xout)
         end
         if graph_sel(i) == 2
             plot_x(tout, xout)
@@ -76,19 +78,20 @@ function plot_sim(tout, xout, graph_sel)
 end
 
 %% plotting functions 
-function plot_theta(tout, xout)
+function plot_q(tout, xout)
 figure %thetaplot 
+    eul = quat2eul(xout(: , 1:4));
     subplot(3,1,1)
-    plot(tout, xout(:,1), 'b', 'linewidth', 2)
+    plot(tout, eul(:,3), 'b', 'linewidth', 2)
     title("\textbf{No control: $\vec{\theta}$}", 'interpreter', 'latex')
     xlabel('time')
     ylabel("phi")
     subplot(3,1,2)
-    plot(tout, xout(:,2), 'b', 'linewidth', 2)
+    plot(tout, eul(:,2), 'b', 'linewidth', 2)
     xlabel('time')
     ylabel("theta") 
     subplot(3,1,3)
-    plot(tout, xout(:,3), 'b', 'linewidth', 2)
+    plot(tout, eul(:,1), 'b', 'linewidth', 2)
     xlabel('time')
     ylabel("psi")
 end
