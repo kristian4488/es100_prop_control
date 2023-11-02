@@ -20,7 +20,7 @@ function dxdt = plant(x, para, thrust, rhodot)
 
     Tw_b_thetadot = [1, sin(x(1)) * tan(x(2)), cos(x(1)) * tan(x(2));
         0, cos(x(1)), -sin(x(1));
-        0, sin(x(1))/cos(x(2)), cos(x(1))/cos(x(2))]
+        0, sin(x(1))/cos(x(2)), cos(x(1))/cos(x(2))];
     Tb_e_psi = [-cos(x(3)), -sin(x(3)), 0;
                 sin(x(3)), -cos(x(3)), 0;
                 0,          0,          1];
