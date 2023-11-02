@@ -7,5 +7,6 @@
 % RW_i sits in the ith quadrant.
 
 function rhodot = actuator_RW(A_RW, u_RW)
+
     rhodot = A_RW * u_RW;
 end

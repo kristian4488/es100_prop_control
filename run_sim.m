@@ -4,9 +4,10 @@ para.m = 9.7;
 Ixx = 0.69;
 Iyy = 0.81;
 Izz = 0.82;
-phi_RW = pi/4;
+theta_i = deg2rad(43);
+theta_j = deg2rad(25);
+theta_k = deg2rad(48);
 para.x_cm = [0.1, 0.05, 0];
-para.x_nozzle = zeros(8,3);
 para.x_nozzle = [0.2, 0.1, 0;
                  0.2, 0.1, 0;
                  0.2, 0, 0;
@@ -21,10 +22,13 @@ para.I = zeros(3);
 para.I(1,1) = Ixx;
 para.I(2,2) = Iyy;
 para.I(3,3) = Izz;
-r_1 = [-1; -1; sqrt(2)*tan(phi_RW)];
-r_2 = [1; -1; sqrt(2)*tan(phi_RW)];
-r_3 = [1; 1; sqrt(2)*tan(phi_RW)];
-r_4 = [-1; 1; sqrt(2)*tan(phi_RW)];
+A_RWx = cos(theta_i)/cos(theta_k);
+A_RWy = 1;
+A_RWz = cos(theta_j)/cos(theta_k);
+r_1 = [-A_RWx; A_RWy; -A_RWz];
+r_2 = [-A_RWx; A_RWy; A_RWz];
+r_3 = [A_RWx; A_RWy; A_RWz];
+r_4 = [A_RWx; A_RWy; -A_RWz];
 r_1 = r_1/norm(r_1);
 r_2 = r_2/norm(r_2);
 r_3 = r_3/norm(r_3);
@@ -43,14 +47,14 @@ eul0 = [0, 0, 0];
 torque_ext_b = [0;0;0];
 x0(1:4) = eul2quat(eul0);
 % control loop reference values
-theta_ref = [pi/2; 0; 0];
-x_ref = [0;0;0];
+theta_ref = [0; pi/4; 0];
+v_ref = [0;1;0];
 % control loop selection
 % 1 - slew
-% 2 - maneuver x
+% 2 - maneuver v
 mode = 1;
 start_time = 0;
-end_time = 10;
+end_time = 200;
 % select data to plot 
 % options listed in plot_sim()
 plot_sel = 'a';
@@ -93,14 +97,14 @@ switch mode
             filetag = filetag + theta_ref(i) + "_";
         end
     case 2
-        filetag = "man_x_";
+        filetag = "man_v_";
         for i = 1:length(theta_ref)
             filetag = filetag + x_ref(i) + "_";
         end
 end
-
+filetag = filetag + num2str(end_time) + "_";
 fileID = fopen(strcat(out_path, filetag, 'timer.txt'),'w');
-fprintf(fileID,'%f\n',toc);
+fprintf(fileID,'%f\n',run_time);
 fclose(fileID);
 data_file = strcat(out_path, filetag, 'data.mat');
 save(data_file, 'x0', 'x_sim');
@@ -110,11 +114,13 @@ plot_sim(t_sim, x_sim, plot_sel)
 function plot_sim(tout, xout, graph_sel) 
     %{
     graph_sel:
+    n - none
     t - (phi, theta, psi)
     x - (x, y, z)
     a - all
     %}
     switch graph_sel
+        case 'n'
         case 't'
             plot_theta(tout, xout)
         case 'x'
@@ -133,7 +139,7 @@ figure
     eul = quat2eul(xout(1:4 , :).');
     subplot(3,1,1)
     plot(tout, eul(:,3), 'b', 'linewidth', 2)
-    title("\textbf{No control: $\vec{\theta}$}", 'interpreter', 'latex')
+    title("\textbf{$\vec{\theta}$}", 'interpreter', 'latex')
     xlabel('time')
     ylabel("phi")
     subplot(3,1,2)
@@ -149,16 +155,16 @@ end
 function plot_x(tout, xout)
 figure 
     subplot(3,1,1)
-    plot(tout, xout(16,:), 'b', 'linewidth', 2)
-    title("\textbf{No control: $\vec{x}$}", 'interpreter', 'latex')
+    plot(tout, xout(17,:), 'b', 'linewidth', 2)
+    title("\textbf{$\vec{x}$}", 'interpreter', 'latex')
     xlabel('time')
     ylabel("x")
     subplot(3,1,2)
-    plot(tout, xout(17,:), 'b', 'linewidth', 2)
+    plot(tout, xout(18,:), 'b', 'linewidth', 2)
     xlabel('time')
     ylabel("y") 
     subplot(3,1,3)
-    plot(tout, xout(18,:), 'b', 'linewidth', 2)
+    plot(tout, xout(19,:), 'b', 'linewidth', 2)
     xlabel('time')
     ylabel("z")
 end
