@@ -1,39 +1,62 @@
 %% constants 
-%positions are body frame quantities
+%positions are bus frame quantities
 para.m = 9.7;
 Ixx = 0.69;
 Iyy = 0.81;
 Izz = 0.82;
+%RW cant angles
 theta_i = deg2rad(43);
 theta_j = deg2rad(25);
 theta_k = deg2rad(48);
-para.x_cm = [0.1, 0.05, 0];
-para.x_nozzle = [0.2, 0.1, 0;
-                 0.2, 0.1, 0;
-                 0.2, 0, 0;
-                 0.2, 0, 0;
-                 0, 0, 0;
-                 0, 0, 0;
-                 0, 0.1, 0;
-                 0, 0.1, 0];
+%Center of Mass
+para.x_cm = [0.11294, 0.07129, 0.13034];
+%Center of Pressure
+para.x_cp = [0.1, 0.05, 0.15];
+%Nozzle Locations
+para.x_nozzle = [0.20215, 0.1, 0.00903;
+                 0.2138, 0.075, 0;
+                 0.2138, 0.025, 0;
+                 0.20215, 0, 0.00903;
+                 0.02415, 0, 0.00903;
+                 0.0125, 0.025, 0;
+                 0.0125, 0.075, 0;
+                 0.02415, 0.1, 0.00903];
+%Thrust at Max Duty Cycle
+para.thrust_max = 0.136;
+para.q = 0.6;
+%Worst case cross Sectional Area
+para.A_s = 0.2 * 0.3;
 
 %% derived quantities
 para.I = zeros(3);
 para.I(1,1) = Ixx;
 para.I(2,2) = Iyy;
 para.I(3,3) = Izz;
+%===========================
+para.I(2,2) = 0.157547;
+para.I(2,3) = 0.02643496;
+para.I(3,2) = 0.02643496;
+para.I(3,3) = 0.11402;
+para.I(3,1) = -0.0000427;
+para.I(1,3) = -0.0000427;
+para.I(1,1) = 0.106747;
+para.I(1,2) = 0.0000713;
+para.I(2,1) = 0.0000713;
+%===========================
 A_RWx = cos(theta_i)/cos(theta_k);
 A_RWy = 1;
 A_RWz = cos(theta_j)/cos(theta_k);
-r_1 = [-A_RWx; A_RWy; -A_RWz];
-r_2 = [-A_RWx; A_RWy; A_RWz];
-r_3 = [A_RWx; A_RWy; A_RWz];
-r_4 = [A_RWx; A_RWy; -A_RWz];
-r_1 = r_1/norm(r_1);
-r_2 = r_2/norm(r_2);
-r_3 = r_3/norm(r_3);
-r_4 = r_4/norm(r_4);
-para.A_RW = [r_1, r_2, r_3, r_4];
+r_1_bus = [-A_RWx; A_RWy; -A_RWz];
+r_2_bus = [-A_RWx; A_RWy; A_RWz];
+r_3_bus = [A_RWx; A_RWy; A_RWz];
+r_4_bus = [A_RWx; A_RWy; -A_RWz];
+r_1_bus = r_1_bus/norm(r_1_bus);
+r_2_bus = r_2_bus/norm(r_2_bus);
+r_3_bus = r_3_bus/norm(r_3_bus);
+r_4_bus = r_4_bus/norm(r_4_bus);
+para.A_RW = [r_1_bus, r_2_bus, r_3_bus, r_4_bus];
+
+% create busses
 para_bus_info = Simulink.Bus.createObject(para);
 para_bus = evalin('base', para_bus_info.busName);
 
@@ -47,12 +70,12 @@ eul0 = [0, 0, 0];
 torque_ext_b = [0;0;0];
 x0(1:4) = eul2quat(eul0);
 % control loop reference values
-theta_ref = [0; pi/4; 0];
-v_ref = [0;1;0];
+theta_ref = [pi/2; pi/4; pi];
+v_ref = [0;1;1];
 % control loop selection
 % 1 - slew
 % 2 - maneuver v
-mode = 1;
+mode = 2;
 start_time = 0;
 end_time = 200;
 % select data to plot 

@@ -6,7 +6,9 @@
 % RW placed on the diagonals of the xy plane.
 % RW_i sits in the ith quadrant.
 
-function rhodot = actuator_RW(A_RW, u_RW)
+function [omega_RW, rho] = actuator_RW(A_RW, duty)
+    omega_RW = duty;
+    rho = A_RW * omega_RW;
 
-    rhodot = A_RW * u_RW;
+
 end
