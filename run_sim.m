@@ -1,13 +1,23 @@
 %% constants 
+% CaliPER physical info================================================
 %positions are bus frame quantities
 para.m = 9.7;
-Ixx = 0.69;
-Iyy = 0.81;
-Izz = 0.82;
+para.I = zeros(3);
+para.I(2,2) = 0.157547;
+para.I(2,3) = 0.02643496;
+para.I(3,2) = 0.02643496;
+para.I(3,3) = 0.11402;
+para.I(3,1) = -0.0000427;
+para.I(1,3) = -0.0000427;
+para.I(1,1) = 0.106747;
+para.I(1,2) = 0.0000713;
+para.I(2,1) = 0.0000713;
 %RW cant angles
 theta_i = deg2rad(43);
 theta_j = deg2rad(25);
 theta_k = deg2rad(48);
+%RW Moment of Inertia
+para.J_RW = 1.8*10^-4;
 %Center of Mass
 para.x_cm = [0.11294, 0.07129, 0.13034];
 %Center of Pressure
@@ -21,28 +31,24 @@ para.x_nozzle = [0.20215, 0.1, 0.00903;
                  0.0125, 0.025, 0;
                  0.0125, 0.075, 0;
                  0.02415, 0.1, 0.00903];
+%Thrust Directions
+para.A_thrust = [0,-1,0;
+                0, 0, 1;
+                0, 0, 1;
+                0, 1, 0;
+                0, 1, 0;
+                0, 0, 1;
+                0, 0, 1;
+                0, -1, 0];
 %Thrust at Max Duty Cycle
 para.thrust_max = 0.136;
-para.q = 0.6;
 %Worst case cross Sectional Area
 para.A_s = 0.2 * 0.3;
 
+% environmental const==================================================
+para.q = 0.6;
+
 %% derived quantities
-para.I = zeros(3);
-para.I(1,1) = Ixx;
-para.I(2,2) = Iyy;
-para.I(3,3) = Izz;
-%===========================
-para.I(2,2) = 0.157547;
-para.I(2,3) = 0.02643496;
-para.I(3,2) = 0.02643496;
-para.I(3,3) = 0.11402;
-para.I(3,1) = -0.0000427;
-para.I(1,3) = -0.0000427;
-para.I(1,1) = 0.106747;
-para.I(1,2) = 0.0000713;
-para.I(2,1) = 0.0000713;
-%===========================
 A_RWx = cos(theta_i)/cos(theta_k);
 A_RWy = 1;
 A_RWz = cos(theta_j)/cos(theta_k);
@@ -56,7 +62,7 @@ r_3_bus = r_3_bus/norm(r_3_bus);
 r_4_bus = r_4_bus/norm(r_4_bus);
 para.A_RW = [r_1_bus, r_2_bus, r_3_bus, r_4_bus];
 
-% create busses
+% create bussesS
 para_bus_info = Simulink.Bus.createObject(para);
 para_bus = evalin('base', para_bus_info.busName);
 
@@ -70,12 +76,12 @@ eul0 = [0, 0, 0];
 torque_ext_b = [0;0;0];
 x0(1:4) = eul2quat(eul0);
 % control loop reference values
-theta_ref = [pi/2; pi/4; pi];
+theta_ref = [pi/2; pi/2; pi];
 v_ref = [0;1;1];
 % control loop selection
 % 1 - slew
 % 2 - maneuver v
-mode = 2;
+mode = 1;
 start_time = 0;
 end_time = 200;
 % select data to plot 
