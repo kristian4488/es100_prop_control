@@ -6,7 +6,6 @@
 %       xdot_b[14:16], 
 %       x[17:19], 
 %       xdot[20:22])
-% theta = [phi, theta, psi] (z y x implicit rotations)
 
 function dxdt = plant(x, para, thrust, rhodot, torque_ext_b)
     % extrinsic declarations for simulink code generation
