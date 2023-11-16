@@ -76,7 +76,7 @@ eul0 = [0, 0, 0];
 torque_ext_b = [0;0;0];
 x0(1:4) = eul2quat(eul0);
 % control loop reference values
-theta_ref = [pi/2; pi/2; pi];
+theta_ref = [0; 0; pi];
 v_ref = [0;1;1];
 % control loop selection
 % 1 - slew
