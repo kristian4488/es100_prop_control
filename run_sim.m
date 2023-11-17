@@ -76,12 +76,12 @@ eul0 = [0, 0, 0];
 torque_ext_b = [0;0;0];
 x0(1:4) = eul2quat(eul0);
 % control loop reference values
-theta_ref = [pi/4; 0; 0];
+theta_ref = [pi/4; pi/4; pi/4];
 v_ref = [0;1;1];
 % control loop selection
 % 1 - slew
 % 2 - maneuver v
-mode = 2;
+mode = 1;
 start_time = 0;
 end_time = 200;
 % select data to plot 

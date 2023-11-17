@@ -17,10 +17,10 @@ function dxdt = plant(x, para, thrust, rhodot, torque_ext_b)
     force_b = zeros(8,3);
     for i= 1:8
         torque_b(i,:) = cross((para.x_nozzle(i,:) - para.x_cm), thrust(i,:));
-        force_b(i,:) = thrust(i,:);                                           %duplicated for additional force later  
+        force_b(i,:) = thrust(i,:);                                             
     end
     torque_net_b = sum(torque_b);
-    torque_net_b = torque_net_b.' + torque_ext_b;
+    torque_net_b = torque_net_b.' + torque_ext_b.';
     force_net_b = sum(force_b);
     force_net_b = force_net_b.';
     Tw_b_quat = [0,         -x(5),  -x(6),      -x(7);
