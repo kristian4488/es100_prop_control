@@ -76,7 +76,12 @@ eul0 = [0, 0, 0];
 torque_ext_b = [0;0;0];
 x0(1:4) = eul2quat(eul0);
 % control loop reference values
-theta_ref = [0; pi/4; pi];
+% random throughout valid euler angles for testing
+theta_ref = rand(3,1);
+theta_ref(1) = theta_ref(1) * 2 * pi - pi;
+theta_ref(2) = theta_ref(2) * pi - pi / 2;
+theta_ref(3) = theta_ref(3) * 2 * pi - pi;
+theta_ref = [2.9210;-1.0757;2.9568];
 v_ref = [0;1;1];
 % control loop selection
 % 1 - slew
