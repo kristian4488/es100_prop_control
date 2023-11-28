@@ -20,6 +20,7 @@ theta_k = deg2rad(48);
 para.J_RW = 1.8*10^-4;
 %Center of Mass
 para.x_cm = [0.11294, 0.07129, 0.13034];
+para.x_cm = para.x_cm + 0.03 * [rand, rand, rand] - 0.015 * ones(1,3);
 %Center of Pressure
 para.x_cp = [0.1, 0.05, 0.15];
 %Nozzle Locations
@@ -81,12 +82,15 @@ theta_ref = rand(3,1);
 theta_ref(1) = theta_ref(1) * 2 * pi - pi;
 theta_ref(2) = theta_ref(2) * pi - pi / 2;
 theta_ref(3) = theta_ref(3) * 2 * pi - pi;
-theta_ref = [2.9210;-1.0757;2.9568];
-v_ref = [0;1;1];
+theta_ref = [0;0;0];
+v_ref = rand(3,1);
+v_ref = v_ref * 6;
+%v_ref = [0;1;1];
 % control loop selection
 % 1 - slew
 % 2 - maneuver v
-mode = 1;
+% 3 - desat
+mode = 3;
 start_time = 0;
 end_time = 200;
 % select data to plot 
